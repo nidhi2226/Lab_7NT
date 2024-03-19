@@ -1,12 +1,9 @@
 //
-//  ViewController.swift
+//  TripViewController.swift
 //  Lab_7NT
 //
 //  Created by user237779 on 3/18/24.
 //
-
-
-
 import UIKit
 import MapKit
 import CoreLocation
@@ -19,7 +16,7 @@ class TripViewController: UIViewController, CLLocationManagerDelegate {
         maxSpeed.text = "00.00 km/h"
         avgSpeed.text = "00.00 km/h"
         distance.text = "00.00 km"
-        maxAcceleration.text = "00.00 m/s"
+        maxAcceleration.text = "00.00 (m/s²)"
         
         // Do any additional setup after loading the view.
     }
@@ -83,16 +80,16 @@ class TripViewController: UIViewController, CLLocationManagerDelegate {
 
        }
     func render (_ location: CLLocation) {
-
+        
         let coordinate = CLLocationCoordinate2D (latitude: location.coordinate.latitude, longitude: location.coordinate.longitude )
-
+        
         //span settings determine how much to zoom into the map - defined details
-
+        
         let span = MKCoordinateSpan(latitudeDelta: 0.03, longitudeDelta: 0.03)
-
+        
         let region = MKCoordinateRegion(center: coordinate, span: span)
-
-      
+        
+        
         let tempSpeed: Double = round(((location.speed * 3.6) * 100)/100)
         
         currentSpeed.text = "\(tempSpeed)  km/h"
@@ -107,23 +104,26 @@ class TripViewController: UIViewController, CLLocationManagerDelegate {
         
         
         maxSpeed.text = "\(tempMaXSpeed) km/h"
-       
         
-        if(tempSpeed > 115){
-            speedAlert.backgroundColor = UIColor.red
+        
+        if let currentLocation = locationManager.location {
+            totalDistance = (round(((currentLocation.distance(from: locationOfStarting))/1000)*100)/100)
+            distance.text = "\(totalDistance) km"
+        } else {
+            print("Location data is not available")
         }
-        else{
-            
-            totalDistance = (round(((locationManager.location!.distance(from: locationOfStarting))/1000)*100)/100)
-            distance.text = " \(totalDistance)  km"
+        
+        // Check if tempSpeed is greater than 115
+        if tempSpeed > 115 {
+            speedAlert.backgroundColor = UIColor.red
+        } else {
             speedAlert.backgroundColor = UIColor.lightGray
         }
+        
         print(location.timestamp)
         
         userLocationMap.setRegion(region, animated: true)
         self.userLocationMap.showsUserLocation = true
-        
-
     }
     func avgSpeedCalculate(_ speed:Double){
         tempAverageSpeed = (speed + tempAverageSpeed) / 2
@@ -145,4 +145,5 @@ class TripViewController: UIViewController, CLLocationManagerDelegate {
     }
     
 }
+
 
